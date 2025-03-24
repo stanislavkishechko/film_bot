@@ -4,7 +4,11 @@
         "description": "Harry Potter and the Philosopher's Stone. It is the first instalment in the Harry Potter film series...",
         "rating": 7.1,
         "genre": "Fantasy",
-        "actors": ["Daniel Radcliffe", "Rupert Grint", "Emma Watson"],
+        "actors": [
+            "Daniel Radcliffe",
+            "Rupert Grint",
+            "Emma Watson"
+        ],
         "poster": "https://upload.wikimedia.org/wikipedia/en/7/7a/Harry_Potter_and_the_Philosopher%27s_Stone_banner.jpg"
     },
     {
@@ -12,7 +16,11 @@
         "description": "Garfield: The Movie is a 2004 American comedy film based on...",
         "rating": 3.52,
         "genre": "Fantasy",
-        "actors": ["Breckin Meyer", "Jennifer Love Hewitt", "Bill Murray"],
+        "actors": [
+            "Breckin Meyer",
+            "Jennifer Love Hewitt",
+            "Bill Murray"
+        ],
         "poster": "https://upload.wikimedia.org/wikipedia/en/thumb/e/eb/Garfield_ver6.jpg/220px-Garfield_ver6.jpg"
     },
     {
@@ -20,7 +28,22 @@
         "description": "«Повстання Штатів» – Після політичної кризи частина штатів...",
         "rating": 7.6,
         "genre": "Бойовик",
-        "actors": ["Кірстен Данст", "Ваґнер Моура", "Джессі Племенс"],
+        "actors": [
+            "Кірстен Данст",
+            "Ваґнер Моура",
+            "Джессі Племенс"
+        ],
         "poster": "https://upload.wikimedia.org/wikipedia/uk/0/08/Civil_War_2024_film_poster.jpg"
+    },
+    {
+        "name": "Spider Man",
+        "description": "Based on Marvel Comics' superhero character, this is a story of Peter Parker who is a nerdy high-schooler.",
+        "rating": 10.0,
+        "genre": "Action",
+        "actors": [
+            "Tobey Maguire",
+            "Kirsten Dunst"
+        ],
+        "poster": "https://m.media-amazon.com/images/I/81hl6JSXxPL._UF1000,1000_QL80_.jpg"
     }
 ]
