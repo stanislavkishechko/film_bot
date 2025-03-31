@@ -14,3 +14,10 @@ def add_film(film: dict, file_path: str = "data.json") -> None:
         films.append(film)
         with open(file_path, 'w') as file:
             json.dump(films, file, indent=4, ensure_ascii=False)
+
+def delete_film(film: dict, file_path: str = "data.json") -> None:
+    films = get_films(file_path, film_id=None)
+    if films:
+        films.remove(film)
+        with open(file_path, 'w') as file:
+            json.dump(films, file, indent=4, ensure_ascii=False)

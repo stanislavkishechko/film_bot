@@ -1,17 +1,5 @@
 [
     {
-        "name": "Harry Potter and the Philosopher's Stone",
-        "description": "Harry Potter and the Philosopher's Stone. It is the first instalment in the Harry Potter film series...",
-        "rating": 7.1,
-        "genre": "Fantasy",
-        "actors": [
-            "Daniel Radcliffe",
-            "Rupert Grint",
-            "Emma Watson"
-        ],
-        "poster": "https://upload.wikimedia.org/wikipedia/en/7/7a/Harry_Potter_and_the_Philosopher%27s_Stone_banner.jpg"
-    },
-    {
         "name": "Garfield: The Movie",
         "description": "Garfield: The Movie is a 2004 American comedy film based on...",
         "rating": 3.52,

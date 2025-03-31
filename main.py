@@ -1,8 +1,9 @@
 import asyncio
 
 
-from commands import FILMS_COMMAND, START_COMMAND, DESCRIPTION_COMMAND, FILM_CREATE_COMMAND, BOT_COMMANDS
-from data import get_films, add_film
+from commands import FILMS_COMMAND, START_COMMAND, DESCRIPTION_COMMAND, FILM_CREATE_COMMAND, BOT_COMMANDS, \
+    FILM_SEARCH_COMMAND, FILM_FILTER_COMMAND, FILM_DELETE_COMMAND
+from data import get_films, add_film, delete_film
 
 from aiogram import Bot, Dispatcher, html
 from aiogram.fsm.context import FSMContext
@@ -12,7 +13,7 @@ from aiogram.types import Message, CallbackQuery, URLInputFile, ReplyKeyboardRem
 
 from decouple import config
 
-from fsm import FilmForm
+from fsm import FilmForm, MovieStates
 from keyboards import films_keyboard_markup, FilmCallback
 from models import Film
 
@@ -133,6 +134,67 @@ async def film_poster(message: Message, state: FSMContext) -> None:
        f"Фільм {film.name} успішно додано!",
        reply_markup=ReplyKeyboardRemove(),
    )
+
+@dp.message(FILM_SEARCH_COMMAND)
+async def search_film(message: Message, state: FSMContext) -> None:
+    await message.reply("Введіть назву фільму для пошуку:")
+    await state.set_state(MovieStates.search_query)
+
+
+@dp.message(MovieStates.search_query)
+async def get_search_query(message: Message, state: FSMContext) -> None:
+    query = message.text.lower()
+    films = get_films()
+    results = [film for film in films if query in film['name'].lower()]
+
+    if results:
+        for film in results:
+            await message.reply(f"Знайдено: {film['name']} - {film['description']}")
+    else:
+        await message.reply("Фільм не знайдено.")
+
+    await state.clear()
+
+
+@dp.message(FILM_FILTER_COMMAND)
+async def search_film(message: Message, state: FSMContext) -> None:
+    await message.reply("Введіть жанр для фільтрації:")
+    await state.set_state(MovieStates.filter_criteria)
+
+
+@dp.message(MovieStates.filter_criteria)
+async def get_search_query(message: Message, state: FSMContext) -> None:
+    query = message.text.lower()
+    films = get_films()
+    results = list(filter(lambda film: query in film['genre'].lower(), films))
+
+    if results:
+        for film in results:
+            await message.reply(f"Знайдено: {film['name']} - {film['description']}")
+    else:
+        await message.reply("Фільм не знайдено.")
+
+    await state.clear()
+
+
+@dp.message(FILM_DELETE_COMMAND)
+async def search_film(message: Message, state: FSMContext) -> None:
+    await message.reply("Введіть назву фільму, який бажаєте видалити:")
+    await state.set_state(MovieStates.delete_query)
+
+@dp.message(MovieStates.delete_query)
+async def get_search_query(message: Message, state: FSMContext) -> None:
+    film_to_delete = message.text.lower()
+    films = get_films()
+    for film in films:
+        if film_to_delete == film['name'].lower():
+            delete_film(film)
+            await message.reply(f"Фільм '{film['name']}' видалено")
+            await state.clear()
+            return
+    else:
+        await message.reply("Фільм не знайдено.")
+        await state.clear()
 
 
 async def main() -> None:
