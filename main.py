@@ -1,9 +1,9 @@
 import asyncio
-
+import logging
 
 from commands import FILMS_COMMAND, START_COMMAND, DESCRIPTION_COMMAND, FILM_CREATE_COMMAND, BOT_COMMANDS, \
-    FILM_SEARCH_COMMAND, FILM_FILTER_COMMAND, FILM_DELETE_COMMAND
-from data import get_films, add_film, delete_film
+    FILM_SEARCH_COMMAND, FILM_FILTER_COMMAND, FILM_DELETE_COMMAND, FILM_SEARCH_BY_ACTOR_COMMAND, FILM_EDIT_COMMAND
+from data import get_films, add_film, delete_film, edit_film
 
 from aiogram import Bot, Dispatcher, html
 from aiogram.fsm.context import FSMContext
@@ -18,6 +18,8 @@ from keyboards import films_keyboard_markup, FilmCallback
 from models import Film
 
 TOKEN = config("BOT_TOKEN")
+
+logger = logging.getLogger(__name__)
 
 dp = Dispatcher()
 
@@ -172,10 +174,29 @@ async def get_search_query(message: Message, state: FSMContext) -> None:
         for film in results:
             await message.reply(f"Знайдено: {film['name']} - {film['description']}")
     else:
+        logger.error(f"Для жанру {query} не знайдено фільмів")
         await message.reply("Фільм не знайдено.")
 
     await state.clear()
 
+@dp.message(FILM_SEARCH_BY_ACTOR_COMMAND)
+async def search_films_by_actor(message: Message, state: FSMContext) -> None:
+    await message.reply("Введіть ім'я та прізвище актора для пошуку:")
+    await state.set_state(MovieStates.filter_by_actor)
+
+@dp.message(MovieStates.filter_by_actor)
+async def get_search_query(message: Message, state: FSMContext) -> None:
+    search_actor = message.text
+    films = get_films()
+    results = list(filter(lambda film: search_actor in film["actors"], films))
+
+    if results:
+        for film in results:
+            await message.reply(f"Знайдено: {film['name']} - {film['description']}")
+    else:
+        await message.reply("Фільми не знайдено.")
+
+    await state.clear()
 
 @dp.message(FILM_DELETE_COMMAND)
 async def search_film(message: Message, state: FSMContext) -> None:
@@ -196,8 +217,39 @@ async def get_search_query(message: Message, state: FSMContext) -> None:
         await message.reply("Фільм не знайдено.")
         await state.clear()
 
+@dp.message(FILM_EDIT_COMMAND)
+async def search_film(message: Message, state: FSMContext) -> None:
+    await message.reply("Введіть назву фільму, який бажаєте редагувати:")
+    await state.set_state(MovieStates.edit_query)
+
+@dp.message(MovieStates.edit_query)
+async def get_edit_query(message: Message, state: FSMContext) -> None:
+    film_to_edit = message.text.lower()
+    films = get_films()
+    for film in films:
+        if film_to_edit == film['name'].lower():
+            await state.update_data(film=film)
+            await message.reply("Введіть новий опис фільму:")
+            await state.set_state(MovieStates.edit_description)
+            return
+    await message.reply("Фільм не знайдено.")
+    await state.clear()
+
+@dp.message(MovieStates.edit_description)
+async def get_edit_query(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    film = data['film']
+    film['description'] = message.text
+    edit_film(film_data=film, film_name=film['name'])
+    await message.reply(f"Фільм '{film['name']}' оновлено")
+    await state.clear()
 
 async def main() -> None:
+    logging.basicConfig(filename="film_bot.log",
+                        level=logging.INFO,
+                        format="%(asctime)s - %(levelname)s - %(message)s",
+                        datefmt="%Y-%m-%d %H:%M:%S"
+    )
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
     await bot.set_my_commands(BOT_COMMANDS)

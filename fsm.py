@@ -12,6 +12,7 @@ class FilmForm(StatesGroup):
 class MovieStates(StatesGroup):
     search_query = State()
     filter_criteria = State()
+    filter_by_actor = State()
     delete_query = State()
     edit_query = State()
     edit_description = State()
